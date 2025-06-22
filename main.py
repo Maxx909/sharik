@@ -1,5 +1,5 @@
 import pygame
-
+import time
 pygame.init()
 
 back = (200, 255, 255)
@@ -43,6 +43,13 @@ class Picture(Area):
 
     def draw(self):
         mw.blit(self.image, (self.rect.x, self.rect.y))
+
+class Label(Area):
+  def set_text(self, text, fsize=12, text_color=(0, 0, 0)):
+      self.image = pygame.font.SysFont('verdana', fsize).render(text, True, text_color)
+  def draw(self, shift_x=0, shift_y=0):
+      self.fill()
+      mw.blit(self.image, (self.rect.x + shift_x, self.rect.y + shift_y))
 
 ball = Picture("ball.png", 160, 200, 50, 50)
 platform = Picture("platform.png", racket_x, racket_y, 100, 30)
@@ -93,9 +100,26 @@ while not game_over:
 
     for m in monsters:
         m.draw()
+        if m.rect.colliderect(ball.rect):
+            monsters.remove(m)
+            m.fill()
+            speed_y *= -1
 
     platform.draw()
     ball.draw()
+    if ball.rect.y > (racket_y +20):
+        time_text = Label(50,200,50,50,back)
+        time_text.set_text('YOU LOSE',60,(255,0,0))
+        time_text.draw(10,10)
+        game_over =True
+    if len(monsters) == 0:
+        time_text = Label(50,200,50,50 , back)
+        time_text.set_text('You win',60,(0,200,0))
+        time_text.draw(10,10)
+        game_over = True    
 
     pygame.display.update()
     clock.tick(40)
+
+
+time.sleep(3)
